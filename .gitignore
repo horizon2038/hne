@@ -1,0 +1,13 @@
+# init
+*
+!*/
+!.git/*
+!.gitignore
+!.gitattributes
+
+# git-ignore
+!*.c
+!*.cpp
+!*.h
+!*.pu
+!Makefile
