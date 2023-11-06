@@ -8,13 +8,14 @@ namespace core
 {
     struct ines_header 
     {
+        // nes = 4E 45 53 1A (NES magic number)
         uint8_t nes[4];
 
-        // program_rom_size * 16KiB (16384) = result
-        uint8_t program_rom_size;
+        // program_rom_count * 16KiB (16384) = program_rom size
+        uint8_t program_rom_count;
 
-        // program_rom_size * 8KiB (8192) = result
-        uint8_t charactor_rom_size;
+        // program_rom_count * 8KiB (8192) = charactor_rom size
+        uint8_t charactor_rom_count;
 
         union
         {
