@@ -1,11 +1,11 @@
-#ifndef CPU_HPP
-#define CPU_HPP
+#ifndef REGISTERS_HPP
+#define REGISTERS_HPP
 
 #include <stdint.h>
 
 namespace core
 {
-    class cpu
+    struct registers
     {
         // accumlator
         uint8_t a;
@@ -39,5 +39,5 @@ namespace core
         };
     };
 }
-
 #endif
+

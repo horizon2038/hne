@@ -5,8 +5,7 @@
 
 namespace core
 {
-    using byte = uint8_t;
-    using word = uint16_t;
+    using address = uint16_t;
 }
 
 #endif

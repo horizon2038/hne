@@ -1,6 +1,8 @@
 #ifndef INES_HEADER_HPP
 #define INES_HEADER_HPP
 
+#include <core/io/io.hpp>
+
 #include <stdint.h>
 #include <vector>
 
@@ -38,7 +40,7 @@ namespace core
         uint8_t padding[5];
     } __attribute__((packed));
 
-    struct rom
+    struct rom : io
     {
         ines_header _header;
         std::vector<uint8_t> _trainer;
@@ -46,6 +48,9 @@ namespace core
         std::vector<uint8_t> _charactor_rom;
         std::vector<uint8_t> _inst_rom;
         std::vector<uint8_t> _p_rom;
+
+        uint8_t read(address target_address) override;
+        void write(address target_address, uint8_t data) override;
     };
 }
 
