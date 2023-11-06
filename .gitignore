@@ -9,5 +9,6 @@
 !*.c
 !*.cpp
 !*.h
+!*.hpp
 !*.pu
 !Makefile
