@@ -6,6 +6,7 @@
 
 namespace core
 {
+    // ines_header = 16byte
     struct ines_header 
     {
         // nes = 4E 45 53 1A (NES magic number)
