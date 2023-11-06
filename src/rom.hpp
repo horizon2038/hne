@@ -3,8 +3,10 @@
 
 #include <stdint.h>
 
-struct ines_header 
+namespace core
 {
+    struct ines_header 
+    {
         uint8_t nes[4];
         uint8_t program_rom_size;
         uint8_t charactor_rom_size;
@@ -14,7 +16,8 @@ struct ines_header
         uint8_t flag_9;
         uint8_t flag_10;
         uint8_t padding[5];
-} __attribute__((packed));
+    } __attribute__((packed));
+}
 
 #endif
 
