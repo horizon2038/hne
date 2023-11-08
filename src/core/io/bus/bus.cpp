@@ -19,7 +19,7 @@ namespace core
     // +--------------------------------+
     // |  0x4018 | 0x0020 |   test mode |
     // +--------------------------------+
-    // |  0x4020 | 0x1fe0 |     ext-ram |
+    // |  0x4020 | 0x1fe0 |     ext-rom |
     // +--------------------------------+
     // |  0x6000 | 0x2000 |     ext-ram |
     // +--------------------------------+
@@ -62,7 +62,7 @@ namespace core
 
         if (0x4020 <= target_address && target_address < 0x6000)
         {
-            // extended ram
+            // extended rom
         }
 
         if (0x6000 <= target_address && target_address < 0x8000)
@@ -83,5 +83,54 @@ namespace core
 
     uint8_t bus::read(address target_address)
     {
+        if (target_address < 0x0800)
+        {
+            // wram
+        }
+
+        if (0x0800 <= target_address && target_address < 0x1000)
+        {
+            // mirror of wram
+        }
+
+        if (0x2000 <= target_address && target_address < 0x2008)
+        {
+            // ppu registers
+        }
+
+        if (0x2008 <= target_address && target_address < 0x2010)
+        {
+            // mirror of ppu registers
+        }
+
+        if (0x4000 <= target_address && target_address < 0x4018)
+        {
+            // memory-mapped i/o (without apu)
+        }
+
+        if (0x4018 <= target_address && target_address < 0x4020)
+        {
+            // test mode
+        }
+
+        if (0x4020 <= target_address && target_address < 0x6000)
+        {
+            // extended rom
+        }
+
+        if (0x6000 <= target_address && target_address < 0x8000)
+        {
+            // extended ram
+        }
+
+        if (0x8000 <= target_address && target_address < 0xc000)
+        {
+            // program rom lower-half
+        }
+
+        if (0xc000 <= target_address && target_address <= 0xFFFF)
+        {
+            // program rom higher-half
+        }
     }
 }

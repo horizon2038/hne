@@ -20,8 +20,8 @@ namespace core
             void clock();
 
             // interrupt
-            void nmi();
             void reset();
+            void nmi();
             void irq();
             void brk();
 

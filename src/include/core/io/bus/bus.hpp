@@ -14,7 +14,7 @@ namespace core
             uint8_t read(address target_address) override;
 
         private:
-            io &_ram;
+            io &_working_ram;
             io &_rom;
             io &_ppu;
     };
