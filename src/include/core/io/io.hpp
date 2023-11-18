@@ -8,8 +8,9 @@ namespace core
 {
     class io
     {
-        virtual uint8_t read(address target_address) = 0;
-        virtual void write(address target_address, uint8_t data) = 0;
+        public:
+            virtual uint8_t read(address target_address) = 0;
+            virtual void write(address target_address, uint8_t data) = 0;
     };
 }
 

@@ -7,7 +7,8 @@ namespace core
 {
     class opcode_none final : public opcode
     {
-        void execute() override;
+        public:
+            void execute() override;
     };
 }
 

@@ -5,6 +5,7 @@
 
 #include <stdint.h>
 #include <vector>
+#include <string>
 
 namespace core
 {
@@ -40,17 +41,20 @@ namespace core
         uint8_t padding[5];
     } __attribute__((packed));
 
-    struct rom : io
+    class rom final : public io
     {
-        ines_header _header;
-        std::vector<uint8_t> _trainer;
-        std::vector<uint8_t> _program_rom;
-        std::vector<uint8_t> _charactor_rom;
-        std::vector<uint8_t> _inst_rom;
-        std::vector<uint8_t> _p_rom;
+        public:
+            uint8_t read(address target_address) override;
+            void write(address target_address, uint8_t data) override;
 
-        uint8_t read(address target_address) override;
-        void write(address target_address, uint8_t data) override;
+        private:
+            ines_header _header;
+            std::vector<uint8_t> _trainer;
+            std::vector<uint8_t> _program_rom;
+            std::vector<uint8_t> _charactor_rom;
+            std::vector<uint8_t> _inst_rom;
+            std::vector<uint8_t> _p_rom;
+
     };
 }
 

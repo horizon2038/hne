@@ -6,7 +6,8 @@ namespace core
     // common opcode interface
     class opcode
     {
-        virtual void execute() = 0;
+        public:
+            virtual void execute() = 0;
     };
 
     enum class addressing_mode

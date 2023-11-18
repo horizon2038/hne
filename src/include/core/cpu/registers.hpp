@@ -37,6 +37,20 @@ namespace core
                 uint8_t carry : 1;
             };
         };
+
+        void init_registers()
+        {
+            pc = 0;
+
+            a = 0;
+            x = 0;
+            y = 0;
+            s = 0;
+
+            p = 0;
+            reserved = 1;
+
+        }
     };
 }
 #endif

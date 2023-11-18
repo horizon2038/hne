@@ -15,7 +15,8 @@ namespace core
 
         private:
             io &_working_ram;
-            io &_rom;
+            io &_charactor_rom;
+            io &_program_rom;
             io &_ppu;
     };
 }
