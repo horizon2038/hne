@@ -20,8 +20,8 @@ namespace core
 
     address cpu::fetch_interrupt_handler_address(address lower_address, address higher_address)
     {
-        uint8_t lower_interrupt_handler_address = fetch(0xfffc);
-        uint8_t higher_interrupt_handler_address = fetch(0xfffd);
+        uint8_t lower_interrupt_handler_address = fetch(lower_address);
+        uint8_t higher_interrupt_handler_address = fetch(higher_address);
         address interrupt_handler_address = merge_address(lower_interrupt_handler_address, higher_interrupt_handler_address);
         return interrupt_handler_address;
     }
