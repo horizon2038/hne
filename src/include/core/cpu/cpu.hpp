@@ -34,10 +34,15 @@ namespace core
             opcode *opcodes[256];
             io &_bus;
 
-            uint16_t fetch_interrupt_handler_address(address lower_address, address higher_address);
             uint8_t fetch(address target_address);
-            address merge_address(uint8_t lower_address, uint8_t higher_address);
             void execute(uint8_t target_opcode);
+
+            void push(uint8_t data);
+            uint8_t pop();
+
+            uint16_t fetch_interrupt_handler_address(address lower_address, address higher_address);
+            void save_interrupt_frame();
+            void restore_interrupt_frame() {};
 
     };
 }
