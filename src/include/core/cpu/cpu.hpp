@@ -31,8 +31,11 @@ namespace core
             void print_registers();
 
         private:
-            opcode *opcodes[256];
+            uint8_t _cycles;
+            opcode *_opcodes[256];
             io &_bus;
+
+            bool is_cycle_finished();
 
             uint8_t fetch(address target_address);
             void execute(uint8_t target_opcode);

@@ -22,7 +22,7 @@ namespace core
         relative,
         indexed_indirect,
         indirect_indexed,
-        absolite_indirect
+        absolute_indirect
     };
 }
 

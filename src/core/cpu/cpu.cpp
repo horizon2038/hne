@@ -4,6 +4,7 @@ namespace core
 {
     cpu::cpu(io &target_bus)
         : _registers{}
+        , _cycles{0}
         , _bus(target_bus)
     {
     }
@@ -15,9 +16,21 @@ namespace core
     // clock() is called from boards
     void cpu::clock()
     {
+        // TODO : consider clock cycle
+        _cycles--;
+        if (!is_cycle_finished())
+        {
+            return;
+        }
+
         _registers.pc++;
         uint8_t opcode_number = fetch(_registers.pc);
         execute(opcode_number);
+    }
+
+    bool cpu::is_cycle_finished()
+    {
+        return (_cycles <= 0);
     }
 
     uint8_t cpu::fetch(address target_address)
@@ -27,7 +40,7 @@ namespace core
 
     void cpu::execute(uint8_t target_opcode)
     {
-        opcodes[target_opcode]->execute();
+        _opcodes[target_opcode]->execute();
     }
 
     void cpu::push(uint8_t data)
@@ -45,8 +58,10 @@ namespace core
 
     void cpu::reset()
     {
+        _registers.disable_irq = true;
         _registers.init_registers();
         _registers.pc = fetch_interrupt_handler_address(0xfffc, 0xfffd);
+        _registers.disable_irq = false;
     }
 
     address cpu::fetch_interrupt_handler_address(address lower_address, address higher_address)
@@ -57,7 +72,6 @@ namespace core
         return interrupt_handler_address;
     }
 
-    // TODO : stack cofiguration for interrupt
     void cpu::nmi()
     {
         _registers.disable_irq = true;
@@ -76,6 +90,7 @@ namespace core
     void cpu::irq()
     {
         _registers.disable_irq = true;
+        _registers.break_mode = false;
         if (_registers.disable_irq)
         {
             return;
@@ -88,6 +103,7 @@ namespace core
     void cpu::brk()
     {
         _registers.disable_irq = true;
+        _registers.break_mode = true;
         if (_registers.disable_irq)
         {
             return;
