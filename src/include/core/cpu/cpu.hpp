@@ -7,6 +7,7 @@
 #include <core/cpu/registers.hpp>
 #include <core/cpu/opcode/opcode.hpp>
 #include <core/io/io.hpp>
+#include <core/cpu/adressing.hpp>
 
 namespace core
 {
@@ -18,8 +19,17 @@ namespace core
             ~cpu();
 
             registers _registers;
+            address _operand_address;
 
             void clock();
+
+            uint8_t fetch();
+            void execute(uint8_t target_opcode);
+
+            void apply_adressing(addressing_mode);
+
+            void push(uint8_t data);
+            uint8_t pop();
 
             // interrupt
             void reset();
@@ -35,13 +45,7 @@ namespace core
             opcode *_opcodes[256];
             io &_bus;
 
-            bool is_cycle_finished();
-
-            uint8_t fetch(address target_address);
-            void execute(uint8_t target_opcode);
-
-            void push(uint8_t data);
-            uint8_t pop();
+            bool is_cycle_running();
 
             uint16_t fetch_interrupt_handler_address(address lower_address, address higher_address);
             void save_interrupt_frame();
