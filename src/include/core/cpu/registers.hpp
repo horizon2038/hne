@@ -25,6 +25,9 @@ namespace core
         union
         {
             uint8_t p;
+
+            // warning
+            // bit-field is processor-dependent
             struct
             {
                 uint8_t negative : 1;

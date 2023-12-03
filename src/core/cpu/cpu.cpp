@@ -170,8 +170,13 @@ namespace core
 
     void cpu::save_interrupt_frame()
     {
-        push(_registers.pc);
-        push(_registers.s);
+        // masking and set bit-conversion.
+        uint8_t lower_program_counter = (_registers.pc >> 0) & 0xFF;
+        uint8_t higher_program_counter = (_registers.pc >> 8) & 0xFF;
+
+        push(higher_program_counter);
+        push(lower_program_counter);
+        push(_registers.p);
     }
 
     void cpu::irq()
