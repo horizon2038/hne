@@ -11,11 +11,12 @@
 
 namespace core
 {
+    constexpr static uint16_t OPCODE_COUNT_MAX = 256;
     // RP2A03
     class cpu
     {
         public:
-            cpu(io &taregt_bus);
+            cpu(opcode *init_opcode, io &taregt_bus);
             ~cpu();
 
             registers _registers;
@@ -32,6 +33,8 @@ namespace core
             uint8_t pop();
 
             // interrupt
+            void register_opcode(opcode *target_opcode, uint16_t opcode_number);
+
             void reset();
             void nmi();
             void irq();
@@ -42,8 +45,11 @@ namespace core
 
         private:
             uint8_t _cycles;
-            opcode *_opcodes[256];
+            opcode *_opcodes[OPCODE_COUNT_MAX];
             io &_bus;
+
+            // init
+            void init_opcodes(opcode *init_opcode);
 
             bool is_cycle_running();
 

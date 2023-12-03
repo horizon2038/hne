@@ -4,7 +4,7 @@
 
 namespace core
 {
-    cpu::cpu(io &target_bus)
+    cpu::cpu(opcode *init_opcode, io &target_bus)
         : _registers{0}
         , _cycles{0}
         , _operand_address{0}
@@ -14,6 +14,23 @@ namespace core
 
     cpu::~cpu()
     {
+    }
+
+    void cpu::init_opcodes(opcode *init_opcode)
+    {
+        for (uint16_t i = 0; i < OPCODE_COUNT_MAX; i++)
+        {
+            register_opcode(init_opcode, i);
+        }
+    }
+
+    void cpu::register_opcode(opcode *target_opcode, uint16_t opcode_number)
+    {
+        if (opcode_number > (OPCODE_COUNT_MAX - 1))
+        {
+            return;
+        }
+        _opcodes[opcode_number] = target_opcode;
     }
 
     // clock() is called from boards
