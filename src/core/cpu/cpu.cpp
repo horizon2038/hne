@@ -45,6 +45,7 @@ namespace core
         _opcodes[target_opcode]->execute();
     }
 
+    // TODO : implementation of addressing_mode)
     void cpu::apply_adressing(addressing_mode target_addressing_mode)
     {
         switch(target_addressing_mode)
@@ -181,12 +182,12 @@ namespace core
 
     void cpu::irq()
     {
-        _registers.disable_irq = true;
-        _registers.break_mode = false;
         if (_registers.disable_irq)
         {
             return;
         }
+        _registers.disable_irq = true;
+        _registers.break_mode = false;
         save_interrupt_frame();
         _registers.pc = fetch_interrupt_handler_address(0xfffe, 0xffff);
         _registers.disable_irq = false;
@@ -194,12 +195,12 @@ namespace core
 
     void cpu::brk()
     {
-        _registers.disable_irq = true;
-        _registers.break_mode = true;
         if (_registers.disable_irq)
         {
             return;
         }
+        _registers.disable_irq = true;
+        _registers.break_mode = true;
         save_interrupt_frame();
         _registers.pc = fetch_interrupt_handler_address(0xfffe, 0xffff);
         _registers.disable_irq = false;

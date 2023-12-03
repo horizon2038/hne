@@ -12,6 +12,16 @@ namespace core
         return lower_address | (higher_address << 8);
     }
 
+    inline static uint8_t convert_lower_half_8(address target_address)
+    {
+        return (target_address >> 0) & 0xFF;
+    }
+
+    inline static uint8_t convert_higher_half_8(address target_address)
+    {
+        return (target_address >> 8) & 0xFF;
+    }
+
 }
 
 #endif
