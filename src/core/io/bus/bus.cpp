@@ -2,17 +2,16 @@
 
 namespace core
 {
-    bus::bus
-    (
+    bus::bus(
         io &target_working_ram,
         io &target_charactor_rom,
         io &target_program_rom,
         io &target_ppu
     )
-    : _working_ram(target_working_ram)
-    , _charactor_rom(target_charactor_rom)
-    , _program_rom(target_program_rom)
-    , _ppu(target_ppu)
+        : _working_ram(target_working_ram)
+        , _charactor_rom(target_charactor_rom)
+        , _program_rom(target_program_rom)
+        , _ppu(target_ppu)
     {
     }
     // nes memory_map
@@ -40,7 +39,7 @@ namespace core
     // +--------------------------------+
     // |  0xc000 | 0x4000 | program-rom |
     // +--------------------------------+
-    
+
     io *bus::search_io_from_address(address target_address)
     {
         if (target_address < 0x0800)
@@ -156,7 +155,6 @@ namespace core
         {
             // program rom lower-half
             return target_address - 0x8000;
-
         }
 
         if (0xc000 <= target_address && target_address <= 0xFFFF)

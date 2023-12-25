@@ -2,6 +2,15 @@
 
 namespace core
 {
+    rom::rom(const char *file_path)
+    {
+        auto function = [](int x) -> int
+        {
+            return x * x;
+        };
+        function(2);
+    }
+
     uint8_t rom::read(address target_address)
     {
     }

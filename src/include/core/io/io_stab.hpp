@@ -7,16 +7,15 @@ namespace core
 {
     class io_stab : public io
     {
-        public:
-            uint8_t read(address target_address)
-            {
-                return 0;
-            }
+      public:
+        uint8_t read(address target_address)
+        {
+            return 0;
+        }
 
-            void write(address target_address)
-            {
-            }
+        void write(address target_address)
+        {
+        }
     };
 }
 #endif
-

@@ -6,8 +6,8 @@ namespace core
     // common opcode interface
     class opcode
     {
-        public:
-            virtual void execute() = 0;
+      public:
+        virtual void execute() = 0;
     };
 }
 

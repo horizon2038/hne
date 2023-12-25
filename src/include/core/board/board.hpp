@@ -11,10 +11,10 @@ namespace core
 {
     class board
     {
-        public:
-            board();
-            ~board();
-            void init();
+      public:
+        board();
+        ~board();
+        void init();
     };
 }
 

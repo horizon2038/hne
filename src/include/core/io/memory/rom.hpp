@@ -10,7 +10,7 @@
 namespace core
 {
     // ines_header = 16byte
-    struct ines_header 
+    struct ines_header
     {
         // nes = 4E 45 53 1A (NES magic number)
         uint8_t nes[4];
@@ -41,22 +41,41 @@ namespace core
         uint8_t padding[5];
     } __attribute__((packed));
 
-    class rom final : public io
+    class program_rom : public io
     {
-        public:
-            uint8_t read(address target_address) override;
-            void write(address target_address, uint8_t data) override;
+      public:
+        program_rom(std::vector<uint8_t> &&target_program_rom);
+        uint8_t read(address target_address) override;
+        void write(address target_address, uint8_t data) override;
 
-        private:
-            ines_header _header;
-            std::vector<uint8_t> _trainer;
-            std::vector<uint8_t> _program_rom;
-            std::vector<uint8_t> _charactor_rom;
-            std::vector<uint8_t> _inst_rom;
-            std::vector<uint8_t> _p_rom;
-
+      private:
+        std::vector<uint8_t> _program_rom;
     };
+
+    class charactor_rom : public io
+    {
+      public:
+        charactor_rom(std::vector<uint8_t> &&target_charactor_rom);
+        uint8_t read(address target_address) override;
+        void write(address target_address, uint8_t data) override;
+
+      private:
+        std::vector<uint8_t> _charactor_rom;
+    };
+
+    class rom
+    {
+      public:
+        rom(const char *file_path);
+
+      private:
+        ines_header _header;
+        std::vector<uint8_t> _trainer;
+        io *_charactor_rom;
+        std::vector<uint8_t> _inst_rom;
+        io *_program_rom;
+    };
+
 }
 
 #endif
-

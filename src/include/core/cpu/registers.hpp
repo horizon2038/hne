@@ -14,7 +14,7 @@ namespace core
         uint8_t x;
         uint8_t y;
 
-        //program counter
+        // program counter
         uint16_t pc;
 
         // stack pointer
@@ -52,9 +52,7 @@ namespace core
 
             p = 0;
             reserved = 1;
-
         }
     };
 }
 #endif
-

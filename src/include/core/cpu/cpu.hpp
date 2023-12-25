@@ -15,48 +15,50 @@ namespace core
     // RP2A03
     class cpu
     {
-        public:
-            cpu(opcode *init_opcode, io &taregt_bus);
-            ~cpu();
+      public:
+        cpu(opcode *init_opcode, io &taregt_bus);
+        ~cpu();
 
-            registers _registers;
-            address _operand_address;
+        registers _registers;
+        address _operand_address;
 
-            void clock();
+        void clock();
 
-            uint8_t fetch();
-            void execute(uint8_t target_opcode);
+        uint8_t fetch();
+        void execute(uint8_t target_opcode);
 
-            void apply_adressing(addressing_mode);
+        void apply_adressing(addressing_mode);
 
-            void push(uint8_t data);
-            uint8_t pop();
+        void push(uint8_t data);
+        uint8_t pop();
 
-            // interrupt
-            void register_opcode(opcode *target_opcode, uint16_t opcode_number);
+        // interrupt
+        void register_opcode(opcode *target_opcode, uint16_t opcode_number);
 
-            void reset();
-            void nmi();
-            void irq();
-            void brk();
+        void reset();
+        void nmi();
+        void irq();
+        void brk();
 
-            // debug
-            void print_registers();
+        // debug
+        void print_registers();
 
-        private:
-            uint8_t _cycles;
-            opcode *_opcodes[OPCODE_COUNT_MAX];
-            io &_bus;
+      private:
+        uint8_t _cycles;
+        opcode *_opcodes[OPCODE_COUNT_MAX];
+        io &_bus;
 
-            // init
-            void init_opcodes(opcode *init_opcode);
+        // init
+        void init_opcodes(opcode *init_opcode);
 
-            bool is_cycle_running();
+        bool is_cycle_running();
 
-            uint16_t fetch_interrupt_handler_address(address lower_address, address higher_address);
-            void save_interrupt_frame();
-            void restore_interrupt_frame() {};
-
+        uint16_t fetch_interrupt_handler_address(
+            address lower_address,
+            address higher_address
+        );
+        void save_interrupt_frame();
+        void restore_interrupt_frame() {};
     };
 }
 
