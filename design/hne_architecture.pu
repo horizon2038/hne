@@ -1,0 +1,80 @@
+@startuml
+
+skinparam linetype ortho
+
+' level_0
+package level_0 {
+  class cpu
+  interface io
+}
+
+' level_1
+package level_1 {
+  class bus
+  interface io
+}
+
+' level_2
+package level_2 {
+  class ram
+  class ppu
+  class apu
+  class pad
+  class rom
+  interface lal
+}
+
+' level_3
+package level_3 {
+  class board_impl
+  class clock
+  interface board
+}
+
+' level_4
+package level_4 {
+  class board_factory
+  interface abstract_board_factory
+  
+  class libraries
+}
+
+package level_5
+{
+  class main
+}
+
+' connect
+level_0.cpu -r-> level_0.io
+
+level_1.bus .u.|> level_0.io
+level_1.bus -r-> level_1.io
+
+level_2.ram .u.|> level_1.io
+level_2.ppu .u.|> level_1.io
+level_2.apu .u.|> level_1.io
+level_2.pad .u.|> level_1.io
+level_2.rom .u.|> level_1.io
+
+level_2.ram -r-> level_2.lal
+level_2.ppu -r-> level_2.lal
+level_2.apu -r-> level_2.lal
+level_2.pad -r-> level_2.lal
+level_2.rom -r-> level_2.lal
+
+level_3.board_impl .r.|> level_3.board
+level_3.board_impl -u-> level_2.lal
+level_3.clock -u-> level_0.cpu
+level_3.clock -u-> level_2.ppu
+level_3.clock -u-> level_2.apu
+
+level_4.libraries .u.|> level_2.lal
+level_4.abstract_board_factory -u-> level_3.board
+level_4.board_factory .r.|> level_4.abstract_board_factory
+level_4.board_factory -u-> level_3.board_impl
+
+level_5.main -u-> level_4.abstract_board_factory
+level_5.main -u-> level_4.board_factory
+
+
+@enduml

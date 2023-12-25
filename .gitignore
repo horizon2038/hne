@@ -9,5 +9,11 @@
 !*.c
 !*.cpp
 !*.h
+<<<<<<< HEAD
 !*.pu
 !Makefile
+=======
+!*.hpp
+!*.pu
+!Makefile
+>>>>>>> feature/nes_base
