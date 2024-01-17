@@ -1,7 +1,43 @@
-CC = g++
-CFLAGS = -Wall
-TARGET = hne
-SRCS = 
-.PHONY: ines_analyzer
-ines_analyzer:
-        $(CC) $(FLAGS) ($INCLUDEDIR) -c $(SRCS)
+TARGET := compiler
+SRCDIR := ./src
+BUILDDIR := ./build
+
+SRCS := $(shell find $(SRCDIR) -type f \( -name "*.c" -or -name "*.cpp" \))
+OBJS := $(addprefix $(BUILDDIR)/, $(addsuffix .o, $(basename $(SRCS:$(SRCDIR)/%=%))))
+$(warning $(OBJS))
+DEPS := $(OBJS:.o=.d)
+
+INCDIR := $(SRCDIR)/include
+INCFLAGS := $(addprefix -I, $(INCDIR))
+
+CC := clang
+CXX := clang++
+LD := ld.lld
+
+CFLAGS := -g -O2 -Wall
+CXXFLAGS := -g -O2 -Wall
+LDFLAGS := -e start -static
+
+.PHONY: all clean
+
+all: executable
+
+executable: $(BUILDDIR)/$(TARGET)
+
+$(BUILDDIR)/$(TARGET): $(OBJS)
+	mkdir -p $(dir $@)
+	$(CXX) $(CPPFLAGS) $^ -o $@
+#	$(LD) $(LDFLAGS) -o $@ $(OBJS)
+
+$(BUILDDIR)/%.o: $(SRCDIR)/%.c
+	mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) -c $< -o $@
+
+$(BUILDDIR)/%.o: $(SRCDIR)/%.cpp
+	mkdir -p $(dir $@)
+	$(CXX) $(CPPFLAGS) -c $< -o $@
+
+clean:
+	rm -f $(BUILDDIR)/*
+
+-include $(DEPS)
