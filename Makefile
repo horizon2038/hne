@@ -1,4 +1,4 @@
-TARGET := compiler
+TARGET := hne
 SRCDIR := ./src
 BUILDDIR := ./build
 
