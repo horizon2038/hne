@@ -1,36 +1,43 @@
 #include <core/common/common.hpp>
 #include <core/cpu/adressing.hpp>
 #include <core/cpu/cpu.hpp>
+#include <memory>
+
+#include <core/cpu/opcode/opcode_none.hpp>
 
 namespace core
 {
-    cpu::cpu(opcode *init_opcode, io &target_bus)
+    cpu::cpu(std::unique_ptr<io> target_bus)
         : _registers { 0 }
         , _cycles { 0 }
         , _operand_address { 0 }
-        , _bus(target_bus)
+        , _bus { std::move(target_bus) }
     {
+        init_opcodes();
     }
 
     cpu::~cpu()
     {
     }
 
-    void cpu::init_opcodes(opcode *init_opcode)
+    void cpu::init_opcodes()
     {
         for (uint16_t i = 0; i < OPCODE_COUNT_MAX; i++)
         {
-            register_opcode(init_opcode, i);
+            _opcodes[i] = std::make_unique<opcode_none>();
         }
     }
 
-    void cpu::register_opcode(opcode *target_opcode, uint16_t opcode_number)
+    void cpu::register_opcode(
+        std::unique_ptr<opcode> target_opcode,
+        uint16_t opcode_number
+    )
     {
         if (opcode_number > (OPCODE_COUNT_MAX - 1))
         {
             return;
         }
-        _opcodes[opcode_number] = target_opcode;
+        _opcodes[opcode_number] = std::move(target_opcode);
     }
 
     // clock() is called from boards
@@ -54,7 +61,7 @@ namespace core
 
     uint8_t cpu::fetch()
     {
-        return _bus.read(_registers.pc++);
+        return _bus->read(_registers.pc++);
     }
 
     void cpu::execute(uint8_t target_opcode)
@@ -87,21 +94,22 @@ namespace core
             case addressing_mode::ZERO_PAGE :
                 {
                     uint8_t target_address = fetch();
-                    _operand_address = _bus.read(target_address);
+                    _operand_address = _bus->read(target_address);
                     return;
                 }
 
             case addressing_mode::INDEXED_ZERO_PAGE_X :
                 {
                     uint8_t target_address = fetch();
-                    _operand_address = _bus.read(target_address + _registers.x);
+                    _operand_address
+                        = _bus->read(target_address + _registers.x);
                     break;
                 }
 
             case addressing_mode::INDEXED_ZERO_PAGE_Y :
                 {
                     uint8_t target_address = fetch();
-                    _operand_address = _bus.read(fetch() + _registers.y);
+                    _operand_address = _bus->read(fetch() + _registers.y);
                     break;
                 }
 
@@ -153,13 +161,13 @@ namespace core
 
     void cpu::push(uint8_t data)
     {
-        _bus.write((0x0100 + _registers.s), data);
+        _bus->write((0x0100 + _registers.s), data);
         _registers.s--;
     }
 
     uint8_t cpu::pop()
     {
-        uint8_t fetched_data = _bus.read((0x0100 + _registers.s));
+        uint8_t fetched_data = _bus->read((0x0100 + _registers.s));
         _registers.s++;
         return fetched_data;
     }
@@ -177,8 +185,8 @@ namespace core
         address higher_address
     )
     {
-        uint8_t lower_interrupt_handler_address = _bus.read(lower_address);
-        uint8_t higher_interrupt_handler_address = _bus.read(higher_address);
+        uint8_t lower_interrupt_handler_address = _bus->read(lower_address);
+        uint8_t higher_interrupt_handler_address = _bus->read(higher_address);
         address interrupt_handler_address = merge_address(
             lower_interrupt_handler_address,
             higher_interrupt_handler_address

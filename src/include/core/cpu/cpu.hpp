@@ -9,6 +9,8 @@
 #include <core/io/io.hpp>
 #include <core/cpu/adressing.hpp>
 
+#include <memory>
+
 namespace core
 {
     constexpr static uint16_t OPCODE_COUNT_MAX = 256;
@@ -16,7 +18,7 @@ namespace core
     class cpu
     {
       public:
-        cpu(opcode *init_opcode, io &target_bus);
+        cpu(std::unique_ptr<io> target_bus);
         ~cpu();
 
         registers _registers;
@@ -33,7 +35,10 @@ namespace core
         uint8_t pop();
 
         // interrupt
-        void register_opcode(opcode *target_opcode, uint16_t opcode_number);
+        void register_opcode(
+            std::unique_ptr<opcode> target_opcode,
+            uint16_t opcode_number
+        );
 
         void reset();
         void nmi();
@@ -45,11 +50,11 @@ namespace core
 
       private:
         uint8_t _cycles;
-        opcode *_opcodes[OPCODE_COUNT_MAX];
-        io &_bus;
+        std::unique_ptr<opcode> _opcodes[OPCODE_COUNT_MAX];
+        std::unique_ptr<io> _bus;
 
         // init
-        void init_opcodes(opcode *init_opcode);
+        void init_opcodes();
 
         bool is_cycle_running();
 
