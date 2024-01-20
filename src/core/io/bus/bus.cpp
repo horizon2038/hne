@@ -1,17 +1,19 @@
 #include <core/io/bus/bus.hpp>
 
+#include <utility>
+
 namespace core
 {
     bus::bus(
-        io &target_working_ram,
-        io &target_charactor_rom,
-        io &target_program_rom,
-        io &target_ppu
+        std::unique_ptr<io> target_working_ram,
+        std::unique_ptr<io> target_charactor_rom,
+        std::unique_ptr<io> target_program_rom,
+        std::unique_ptr<io> target_ppu
     )
-        : _working_ram(target_working_ram)
-        , _charactor_rom(target_charactor_rom)
-        , _program_rom(target_program_rom)
-        , _ppu(target_ppu)
+        : _working_ram(std::move(target_working_ram))
+        , _charactor_rom(std::move(target_charactor_rom))
+        , _program_rom(std::move(target_program_rom))
+        , _ppu(std::move(target_ppu))
     {
     }
     // nes memory_map
@@ -40,30 +42,30 @@ namespace core
     // |  0xc000 | 0x4000 | program-rom |
     // +--------------------------------+
 
-    io *bus::search_io_from_address(address target_address)
+    io &bus::search_io_from_address(address target_address)
     {
         if (target_address < 0x0800)
         {
             // wram
-            return &_working_ram;
+            return *_working_ram.get();
         }
 
         if (0x0800 <= target_address && target_address < 0x1000)
         {
             // mirror of wram
-            return &_working_ram;
+            return *_working_ram.get();
         }
 
         if (0x2000 <= target_address && target_address < 0x2008)
         {
             // ppu registers
-            return &_ppu;
+            return *_ppu.get();
         }
 
         if (0x2008 <= target_address && target_address < 0x2010)
         {
             // mirror of ppu registers
-            return &_ppu;
+            return *_ppu.get();
         }
 
         if (0x4000 <= target_address && target_address < 0x4018)
@@ -89,17 +91,17 @@ namespace core
         if (0x8000 <= target_address && target_address < 0xc000)
         {
             // program rom lower-half
-            return &_program_rom;
+            return *_program_rom.get();
         }
 
         if (0xc000 <= target_address && target_address <= 0xFFFF)
         {
             // program rom higher-half
-            return &_program_rom;
+            return *_program_rom.get();
         }
 
         // failed
-        return nullptr;
+        return empty_io;
     }
 
     address bus::convert_local_io_address(address target_address)
@@ -168,16 +170,16 @@ namespace core
 
     void bus::write(address target_address, uint8_t data)
     {
-        io *target_io = search_io_from_address(target_address);
+        io &target_io = search_io_from_address(target_address);
         address local_io_address = convert_local_io_address(target_address);
-        target_io->write(local_io_address, data);
+        target_io.write(local_io_address, data);
     }
 
     uint8_t bus::read(address target_address)
     {
-        io *target_io = search_io_from_address(target_address);
+        io &target_io = search_io_from_address(target_address);
         address local_io_address = convert_local_io_address(target_address);
-        return target_io->read(local_io_address);
+        return target_io.read(local_io_address);
     }
 
 }

@@ -3,27 +3,34 @@
 
 #include <core/io/io.hpp>
 #include <core/common/common.hpp>
+#include <core/io/io_stab.hpp>
+
 #include <stdint.h>
+#include <memory>
 
 namespace core
 {
     class bus final : public io
     {
       public:
-        bus(io &target_working_ram,
-            io &target_charactor_rom,
-            io &target_program_rom,
-            io &target_ppu);
+        bus(std::unique_ptr<io> target_working_ram,
+            std::unique_ptr<io> target_charactor_rom,
+            std::unique_ptr<io> target_program_rom,
+            std::unique_ptr<io> target_ppu);
+        virtual ~bus() {};
+
         void write(address target_address, uint8_t data) override;
         uint8_t read(address target_address) override;
 
       private:
-        io &_working_ram;
-        io &_charactor_rom;
-        io &_program_rom;
-        io &_ppu;
+        std::unique_ptr<io> _working_ram;
+        std::unique_ptr<io> _charactor_rom;
+        std::unique_ptr<io> _program_rom;
+        std::unique_ptr<io> _ppu;
 
-        io *search_io_from_address(address target_address);
+        io_stab empty_io;
+
+        io &search_io_from_address(address target_address);
         address convert_local_io_address(address target_address);
     };
 }

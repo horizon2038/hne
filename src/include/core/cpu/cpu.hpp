@@ -16,7 +16,7 @@ namespace core
     class cpu
     {
       public:
-        cpu(opcode *init_opcode, io &taregt_bus);
+        cpu(opcode *init_opcode, io &target_bus);
         ~cpu();
 
         registers _registers;
