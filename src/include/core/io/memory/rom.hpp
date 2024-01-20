@@ -46,8 +46,12 @@ namespace core
     {
       public:
         primitive_rom(std::unique_ptr<std::vector<uint8_t>> target_rom_data);
+        virtual ~primitive_rom() {};
+
         uint8_t read(address target_address) override;
         void write(address target_address, uint8_t data) override;
+
+        void dump();
 
       private:
         std::unique_ptr<std::vector<uint8_t>> rom_data;
@@ -57,6 +61,7 @@ namespace core
     {
       public:
         rom(const char *file_path);
+        ~rom() {};
 
         ines_header header;
         std::vector<uint8_t> trainer;

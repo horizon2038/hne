@@ -5,6 +5,8 @@
 #include <memory>
 #include <utility>
 
+#include <stdio.h>
+
 namespace core
 {
     primitive_rom::primitive_rom(
@@ -12,6 +14,7 @@ namespace core
     )
         : rom_data(std::move(target_rom_data))
     {
+        dump();
     }
 
     uint8_t primitive_rom::read(address target_address)
@@ -21,6 +24,39 @@ namespace core
 
     // "Read Only"
     void primitive_rom::write(address target_address, uint8_t data) {};
+
+    void primitive_rom::dump()
+    {
+        auto i = 0;
+        uint32_t line_index = 0;
+        auto byte_space_size = 1;
+        auto block_space_size = 1;
+        auto block_line_max = 4;
+
+        auto calculate_line_offset = [&]() -> auto
+        {
+            return (line_index * 4 * block_line_max);
+        };
+
+        printf("[0x%04x] ", calculate_line_offset());
+        for (const auto &e : *rom_data)
+        {
+            printf("%02x%*s", e, byte_space_size, "");
+            i++;
+            if (i % 4 == 0)
+            {
+                printf("%*s", block_space_size, "");
+            }
+            if (i % (4 * block_line_max) == 0)
+            {
+                i = 0;
+                line_index++;
+                printf("\n");
+                printf("[0x%04x] ", calculate_line_offset());
+            }
+        }
+        printf("\n");
+    }
 
     rom::rom(const char *file_path)
     {

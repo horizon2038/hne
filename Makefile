@@ -42,6 +42,6 @@ $(BUILDDIR)/%.o: $(SRCDIR)/%.cpp
 	$(CXX) $(CPPFLAGS) -c $< -o $@
 
 clean:
-	rm -f $(BUILDDIR)/*
+	rm -rf $(BUILDDIR)/*
 
 -include $(DEPS)
