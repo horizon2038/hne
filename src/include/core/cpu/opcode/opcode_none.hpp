@@ -8,9 +8,7 @@ namespace core
     class opcode_none final : public opcode
     {
       public:
-        void execute() override
-        {
-        }
+        void execute() override;
     };
 }
 

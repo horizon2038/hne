@@ -10,6 +10,8 @@ DEPS := $(OBJS:.o=.d)
 INCDIR := $(SRCDIR)/include
 INCFLAGS := $(addprefix -I, $(INCDIR))
 
+$(warning $(INCFLAGS))
+
 CC := clang
 CXX := clang++
 LD := ld.lld
@@ -17,6 +19,8 @@ LD := ld.lld
 CFLAGS := -g -O2 -Wall
 CXXFLAGS := -g -O2 -Wall
 LDFLAGS := -e start -static
+
+CPPFLAGS := $(INCFLAGS)
 
 .PHONY: all clean
 
