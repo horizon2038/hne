@@ -10,6 +10,7 @@
 #include <core/io/memory/ram.hpp>
 #include <core/io/memory/rom.hpp>
 #include <memory>
+#include <unistd.h>
 
 int main(int argc, char *argv[])
 {
@@ -18,14 +19,16 @@ int main(int argc, char *argv[])
     auto ppu = std::make_unique<core::io_stab>();
     auto bus = std::make_unique<core::bus>(
         std::move(ram),
-        std::move(rom->program),
         std::move(rom->charactor),
+        std::move(rom->program),
         std::move(ppu)
     );
 
     auto cpu = std::make_unique<core::cpu>(std::move(bus));
-    while (1)
+    cpu->reset();
+    for (auto i = 0; i < 1000; i++)
     {
         cpu->clock();
+        usleep(100000);
     }
 }

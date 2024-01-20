@@ -17,7 +17,7 @@ CXX := clang++
 LD := ld.lld
 
 CFLAGS := -g -O2 -Wall
-CXXFLAGS := -g -O2 -Wall -Wextra -fsanitize=undefined -fno-omit-frame-pointer
+CXXFLAGS := -g -O2 -Wall -Wextra
 LDFLAGS := -e start -static
 
 CPPFLAGS := $(INCFLAGS)

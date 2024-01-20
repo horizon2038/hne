@@ -5,12 +5,14 @@
 
 #include <core/cpu/opcode/opcode_none.hpp>
 
+#include <stdio.h>
+
 namespace core
 {
     cpu::cpu(std::unique_ptr<io> target_bus)
-        : _registers { 0 }
-        , _cycles { 0 }
-        , _operand_address { 0 }
+        : _registers {}
+        , _cycles { 6 }
+        , _operand_address {}
         , _bus { std::move(target_bus) }
     {
         init_opcodes();
@@ -24,7 +26,7 @@ namespace core
     {
         for (uint16_t i = 0; i < OPCODE_COUNT_MAX; i++)
         {
-            _opcodes[i] = std::make_unique<opcode_none>();
+            _opcodes[i] = std::make_unique<opcode_none>(*this);
         }
     }
 
@@ -43,20 +45,22 @@ namespace core
     // clock() is called from boards
     void cpu::clock()
     {
-        // TODO : consider clock cycle
+        printf("current pc : 0x%04x\n", this->_registers.pc);
         _cycles--;
+        printf("cycles : %8d\n", _cycles);
         if (is_cycle_running())
         {
             return;
         }
 
         uint8_t opcode_number = fetch();
+        printf("opcode : 0x%02x\n", opcode_number);
         execute(opcode_number);
     }
 
     bool cpu::is_cycle_running()
     {
-        return !(_cycles <= 0);
+        return (_cycles > 0);
     }
 
     uint8_t cpu::fetch()
@@ -159,6 +163,11 @@ namespace core
         }
     }
 
+    void cpu::apply_cycles(uint8_t cycles)
+    {
+        this->_cycles = cycles;
+    }
+
     void cpu::push(uint8_t data)
     {
         _bus->write((0x0100 + _registers.s), data);
@@ -177,6 +186,8 @@ namespace core
         _registers.disable_irq = true;
         _registers.init_registers();
         _registers.pc = fetch_interrupt_handler_address(0xfffc, 0xfffd);
+        // _registers.pc = 0x8000;
+        printf("interrpt_handler_address : 0x%04x\n", this->_registers.pc);
         _registers.disable_irq = false;
     }
 

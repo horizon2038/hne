@@ -14,12 +14,13 @@ namespace core
     )
         : rom_data(std::move(target_rom_data))
     {
-        dump();
+        // dump();
     }
 
     uint8_t primitive_rom::read(address target_address)
     {
         return rom_data->data()[target_address];
+        // return rom_data->at(target_address);
     }
 
     // "Read Only"
@@ -110,7 +111,9 @@ namespace core
     void rom::setup_rom(std::ifstream &file)
     {
         auto program_rom_offset = sizeof(ines_header);
-        program_rom_offset += this->header.trainer_exists ? 0 : 512;
+        program_rom_offset += this->header.trainer_exists ? 512 : 0;
+
+        printf("program_rom_offset : 0x%04x\n", program_rom_offset);
 
         auto program_rom_size = 16384 * this->header.program_rom_count;
 
