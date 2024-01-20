@@ -62,6 +62,7 @@ namespace core
     {
         auto rom_binary = open_rom_file(file_path);
         this->header = read_ines_header(rom_binary);
+        ines_info();
         setup_rom(rom_binary);
     }
 
@@ -76,6 +77,34 @@ namespace core
         ines_header header;
         file.read(reinterpret_cast<char *>(&header), sizeof(ines_header));
         return header;
+    }
+
+    void rom::ines_info()
+    {
+        uint8_t magic[5];
+        std::memcpy(magic, this->header.nes, 4);
+        magic[4] = '\0';
+
+        auto program_rom_size = 16384 * this->header.program_rom_count;
+        auto charactor_rom_size = 8192 * this->header.charactor_rom_count;
+
+        printf("nes_magic\e[25G : %s\n", magic);
+        printf("program_rom_size\e[25G : 0x%4x\n", program_rom_size);
+        printf("charactor_rom_size\e[25G : 0x%4x\n", charactor_rom_size);
+
+        printf("flag_6\e[25G :\n");
+        printf("- mirroring\e[25G : %d\n", this->header.mirroring);
+        printf(
+            "- presisent_exists\e[25G : %d\n",
+            this->header.persisent_memory_exists
+        );
+        printf("- trainer_exists\e[25G : %d\n", this->header.trainer_exists);
+        printf(
+            "- ignore_mirroring\e[25G : %d\n",
+            this->header.ignore_mirroring
+        );
+        printf("- mapper_lower\e[25G : %d\n", this->header.mapper_lower);
+        printf("\n");
     }
 
     void rom::setup_rom(std::ifstream &file)

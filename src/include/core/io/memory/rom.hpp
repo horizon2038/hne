@@ -69,6 +69,8 @@ namespace core
         std::vector<uint8_t> inst_rom;
         std::unique_ptr<io> program;
 
+        void ines_info();
+
       private:
         std::ifstream open_rom_file(const char *path);
         ines_header read_ines_header(std::ifstream &flie);
