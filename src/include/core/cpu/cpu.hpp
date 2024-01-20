@@ -29,7 +29,7 @@ namespace core
         uint8_t fetch();
         void execute(uint8_t target_opcode);
 
-        void apply_adressing(addressing_mode);
+        uint16_t apply_adressing(addressing_mode);
         void apply_cycles(uint8_t cycles);
 
         void push(uint8_t data);
