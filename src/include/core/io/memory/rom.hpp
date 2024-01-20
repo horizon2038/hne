@@ -5,6 +5,7 @@
 
 #include <stdint.h>
 #include <vector>
+#include <memory>
 #include <string>
 
 namespace core
@@ -41,26 +42,15 @@ namespace core
         uint8_t padding[5];
     } __attribute__((packed));
 
-    class program_rom : public io
+    class primitive_rom : public io
     {
       public:
-        program_rom(std::vector<uint8_t> &&target_program_rom);
+        primitive_rom(std::unique_ptr<std::vector<uint8_t>> target_rom_data);
         uint8_t read(address target_address) override;
         void write(address target_address, uint8_t data) override;
 
       private:
-        std::vector<uint8_t> _program_rom;
-    };
-
-    class charactor_rom : public io
-    {
-      public:
-        charactor_rom(std::vector<uint8_t> &&target_charactor_rom);
-        uint8_t read(address target_address) override;
-        void write(address target_address, uint8_t data) override;
-
-      private:
-        std::vector<uint8_t> _charactor_rom;
+        std::unique_ptr<std::vector<uint8_t>> rom_data;
     };
 
     class rom
@@ -68,12 +58,21 @@ namespace core
       public:
         rom(const char *file_path);
 
+        ines_header header;
+        std::vector<uint8_t> trainer;
+        std::unique_ptr<io> charactor;
+        std::vector<uint8_t> inst_rom;
+        std::unique_ptr<io> program;
+
       private:
-        ines_header _header;
-        std::vector<uint8_t> _trainer;
-        io *_charactor_rom;
-        std::vector<uint8_t> _inst_rom;
-        io *_program_rom;
+        std::ifstream open_rom_file(const char *path);
+        ines_header read_ines_header(std::ifstream &flie);
+        void setup_rom(std::ifstream &file);
+        std::unique_ptr<std::vector<uint8_t>> create_vector_from_file(
+            std::ifstream &file,
+            std::streamoff offset,
+            size_t size
+        );
     };
 
 }
