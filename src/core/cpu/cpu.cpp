@@ -12,7 +12,6 @@ namespace core
     cpu::cpu(std::unique_ptr<io> target_bus)
         : _registers {}
         , _cycles { 6 }
-        , _operand_address {}
         , _bus { std::move(target_bus) }
     {
         init_opcodes();
@@ -73,8 +72,8 @@ namespace core
         _opcodes[target_opcode]->execute();
     }
 
-    // TODO : implementation of addressing_mode)
-    uint16_t cpu::apply_adressing(addressing_mode target_addressing_mode)
+    // TODO (horizon2k38): return only address
+    uint16_t cpu::fetch_operand(addressing_mode target_addressing_mode)
     {
         switch (target_addressing_mode)
         {
@@ -171,6 +170,7 @@ namespace core
             case addressing_mode::INDEXED_INDIRECT :
                 {
                     auto pre_target_address = fetch() + _registers.x;
+                    pre_target_address &= 0xFF;
                     auto lower_target_address = _bus->read(pre_target_address);
                     auto higher_target_address
                         = _bus->read(pre_target_address + 1);
