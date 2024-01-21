@@ -7,6 +7,7 @@ namespace core
     class opcode
     {
       public:
+        virtual ~opcode() {};
         virtual void execute() = 0;
     };
 }

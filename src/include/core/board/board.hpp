@@ -12,9 +12,7 @@ namespace core
     class board
     {
       public:
-        board();
-        ~board();
-        void init();
+        virtual void init();
     };
 }
 

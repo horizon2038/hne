@@ -72,7 +72,6 @@ namespace core
         _opcodes[target_opcode]->execute();
     }
 
-    // TODO (horizon2k38): return only address
     uint16_t cpu::fetch_operand_address(addressing_mode target_addressing_mode)
     {
         switch (target_addressing_mode)
@@ -89,6 +88,7 @@ namespace core
 
             case addressing_mode::IMMEDIATE :
                 {
+                    // exception : return "data", not address
                     return fetch();
                 }
 

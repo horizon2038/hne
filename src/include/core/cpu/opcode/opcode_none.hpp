@@ -10,6 +10,7 @@ namespace core
     {
       public:
         opcode_none(core::cpu &target_cpu);
+        ~opcode_none() {};
 
         void execute() override;
 

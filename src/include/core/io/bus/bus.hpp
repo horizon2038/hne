@@ -17,7 +17,6 @@ namespace core
             std::unique_ptr<io> target_charactor_rom,
             std::unique_ptr<io> target_program_rom,
             std::unique_ptr<io> target_ppu);
-        virtual ~bus() {};
 
         void write(address target_address, uint8_t data) override;
         uint8_t read(address target_address) override;

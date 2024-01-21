@@ -17,7 +17,7 @@ CXX := clang++
 LD := ld.lld
 
 CFLAGS := -g -O2 -Wall
-CXXFLAGS := -g -O2 -Wall -Wextra -fsanitize=undefined -std=c++17
+CXXFLAGS := -g -O2 -Wall -Wextra
 LDFLAGS := -e start -static
 
 CPPFLAGS := $(INCFLAGS)
@@ -30,7 +30,7 @@ executable: $(BUILDDIR)/$(TARGET)
 
 $(BUILDDIR)/$(TARGET): $(OBJS)
 	mkdir -p $(dir $@)
-	$(CXX) $(CPPFLAGS) $^ -o $@ -fsanitize=undefined
+	$(CXX) $(CPPFLAGS) $^ -o $@
 #	$(LD) $(LDFLAGS) -o $@ $(OBJS)
 
 $(BUILDDIR)/%.o: $(SRCDIR)/%.c
