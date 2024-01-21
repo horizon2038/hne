@@ -11,7 +11,7 @@ namespace core
 {
     cpu::cpu(std::unique_ptr<io> target_bus)
         : _registers {}
-        , _cycles { 6 }
+        , _cycles { 6 } // initial cycles (6 : default)
         , _bus { std::move(target_bus) }
     {
         init_opcodes();
@@ -73,7 +73,7 @@ namespace core
     }
 
     // TODO (horizon2k38): return only address
-    uint16_t cpu::fetch_operand(addressing_mode target_addressing_mode)
+    uint16_t cpu::fetch_operand_address(addressing_mode target_addressing_mode)
     {
         switch (target_addressing_mode)
         {
@@ -94,76 +94,75 @@ namespace core
 
             case addressing_mode::ZERO_PAGE :
                 {
-                    uint8_t target_address = fetch();
-                    auto operand = _bus->read(target_address);
-                    return operand & 0xFF;
+                    auto target_address = fetch();
+                    return target_address & 0xFF;
                 }
 
             case addressing_mode::INDEXED_ZERO_PAGE_X :
                 {
-                    uint8_t target_address = fetch();
-                    auto operand = _bus->read(target_address + _registers.x);
-                    return operand & 0xFF;
+                    auto target_address = fetch() + _registers.x;
+                    return target_address & 0xFF;
                 }
 
             case addressing_mode::INDEXED_ZERO_PAGE_Y :
                 {
-                    uint8_t target_address = fetch();
-                    auto operand = _bus->read(target_address + _registers.y);
-                    return operand & 0xFF;
+                    auto target_address = fetch() + _registers.y;
+                    return target_address & 0xFF;
                 }
 
             case addressing_mode::ABSOLUTE :
                 {
-                    uint8_t lower_target_address = fetch();
-                    uint8_t higher_target_address = fetch();
+                    auto lower_target_address = fetch();
+                    auto higher_target_address = fetch();
                     auto target_address = merge_address(
                         lower_target_address,
                         higher_target_address
                     );
-                    auto operand = _bus->read(target_address);
-                    return operand & 0xFF;
+                    return target_address & 0xFFFF;
                 }
 
             case addressing_mode::INDEXED_ABSOLUTE_X :
                 {
-                    uint8_t lower_target_address = fetch();
-                    uint8_t higher_target_address = fetch();
+                    auto lower_target_address = fetch();
+                    auto higher_target_address = fetch();
                     auto target_address = merge_address(
                         lower_target_address,
                         higher_target_address
                     );
-                    auto operand = _bus->read(target_address + _registers.x);
-                    return operand & 0xFF;
+                    return (target_address + _registers.x) & 0xFFFF;
                 }
 
             case addressing_mode::INDEXED_ABSOLUTE_Y :
                 {
-                    uint8_t lower_target_address = fetch();
-                    uint8_t higher_target_address = fetch();
+                    auto lower_target_address = fetch();
+                    auto higher_target_address = fetch();
                     auto target_address = merge_address(
                         lower_target_address,
                         higher_target_address
                     );
-                    auto operand = _bus->read(target_address + _registers.y);
-                    return operand & 0xFF;
+                    return (target_address + _registers.y) & 0xFFFF;
                 }
 
             case addressing_mode::RELATIVE :
                 {
-                    auto target_address = _registers.pc + fetch();
-                    auto operand = _bus->read(target_address);
-                    return operand & 0xFF;
+                    auto target_address
+                        = _registers.pc + static_cast<int8_t>(fetch());
+                    return target_address & 0xFF;
                 }
 
             case addressing_mode::INDIRECT :
                 {
-                    auto lower_target_address = fetch();
-                    auto higher_target_address = fetch();
-                    auto lower_operand = _bus->read(lower_target_address);
-                    auto higher_operand = _bus->read(higher_target_address);
-                    auto target_address
-                        = merge_address(lower_operand, higher_operand);
+                    auto lower_address = fetch();
+                    auto higher_address = fetch();
+                    auto pre_target_address
+                        = merge_address(lower_address, higher_address);
+                    auto lower_target_address = _bus->read(pre_target_address);
+                    auto higher_target_address
+                        = _bus->read(pre_target_address + 1);
+                    auto target_address = merge_address(
+                        lower_target_address,
+                        higher_target_address
+                    );
                     return target_address & 0xFFFF;
                 }
 
@@ -178,8 +177,7 @@ namespace core
                         lower_target_address,
                         higher_target_address
                     );
-                    auto operand = _bus->read(target_address);
-                    return operand & 0xFF;
+                    return target_address & 0xFFFF;
                 }
 
             case addressing_mode::INDIRECT_INDEXED :
@@ -193,7 +191,7 @@ namespace core
                         higher_target_address
                     );
                     auto operand = _bus->read(target_address + _registers.y);
-                    return operand & 0xFF;
+                    return operand & 0xFFFF;
                 }
 
             default :

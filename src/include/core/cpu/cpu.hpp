@@ -28,7 +28,7 @@ namespace core
         uint8_t fetch();
         void execute(uint8_t target_opcode);
 
-        uint16_t fetch_operand(addressing_mode);
+        uint16_t fetch_operand_address(addressing_mode);
         void apply_cycles(uint8_t cycles);
 
         void push(uint8_t data);
