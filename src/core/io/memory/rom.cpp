@@ -113,7 +113,7 @@ namespace core
         auto program_rom_offset = sizeof(ines_header);
         program_rom_offset += this->header.trainer_exists ? 512 : 0;
 
-        printf("program_rom_offset : 0x%04x\n", program_rom_offset);
+        printf("program_rom_offset : 0x%04lx\n", program_rom_offset);
 
         auto program_rom_size = 16384 * this->header.program_rom_count;
 
