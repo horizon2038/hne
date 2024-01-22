@@ -18,7 +18,8 @@ LD := ld.lld
 
 CFLAGS := -g -O2 -Wall
 CXXFLAGS := -g -O2 -Wall -Wextra
-LDFLAGS := -e start -static
+LDFLAGS := -g -O2 -Wall -Wextra
+# -e start -static
 
 CPPFLAGS := $(INCFLAGS)
 
@@ -30,16 +31,16 @@ executable: $(BUILDDIR)/$(TARGET)
 
 $(BUILDDIR)/$(TARGET): $(OBJS)
 	mkdir -p $(dir $@)
-	$(CXX) $(CPPFLAGS) $^ -o $@
+	$(CXX) $(LDFLAGS) $(CPPFLAGS) $^ -o $@
 #	$(LD) $(LDFLAGS) -o $@ $(OBJS)
 
 $(BUILDDIR)/%.o: $(SRCDIR)/%.c
 	mkdir -p $(dir $@)
-	$(CC) $(CPPFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
 
 $(BUILDDIR)/%.o: $(SRCDIR)/%.cpp
 	mkdir -p $(dir $@)
-	$(CXX) $(CPPFLAGS) -c $< -o $@
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c $< -o $@
 
 clean:
 	rm -rf $(BUILDDIR)/*
