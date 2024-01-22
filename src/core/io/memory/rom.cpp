@@ -70,7 +70,7 @@ namespace core
     std::ifstream rom::open_rom_file(const char *path)
     {
         std::ifstream file(path, std::ios::binary);
-        return std::move(file);
+        return file;
     }
 
     ines_header rom::read_ines_header(std::ifstream &file)
