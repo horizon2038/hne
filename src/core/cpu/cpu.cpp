@@ -125,29 +125,49 @@ namespace core
                 {
                     auto lower_target_address  = fetch();
                     auto higher_target_address = fetch();
-                    auto target_address        = merge_address(
+                    auto base_address          = merge_address(
                         lower_target_address,
                         higher_target_address
                     );
-                    return (target_address + registers.x) & 0xFFFF;
+                    auto target_address = base_address + registers.x;
+
+                    // if page boundaries are to be crossed,
+                    // a cycle must be added.
+                    if ((base_address & 0xFF00) != (target_address & 0xFF00))
+                    {
+                        apply_cycles(1);
+                    }
+
+                    return target_address;
                 }
 
             case addressing_mode::INDEXED_ABSOLUTE_Y :
                 {
                     auto lower_target_address  = fetch();
                     auto higher_target_address = fetch();
-                    auto target_address        = merge_address(
+                    auto base_address          = merge_address(
                         lower_target_address,
                         higher_target_address
                     );
-                    return (target_address + registers.y) & 0xFFFF;
+                    auto target_address = base_address + registers.y;
+
+                    // if page boundaries are to be crossed,
+                    // a cycle must be added.
+                    if ((base_address & 0xFF00) != (target_address & 0xFF00))
+                    {
+                        apply_cycles(1);
+                    }
+
+                    return target_address;
                 }
 
             case addressing_mode::RELATIVE :
                 {
-                    auto target_address
-                        = registers.pc + static_cast<int8_t>(fetch());
-                    return target_address & 0xFF;
+                    int8_t  offset = static_cast<int8_t>(fetch());
+                    int16_t target_address
+                        = registers.pc + static_cast<int16_t>(registers.pc)
+                        + static_cast<int16_t>(offset);
+                    return target_address & 0xFFFF;
                 }
 
             case addressing_mode::INDIRECT :
@@ -165,30 +185,37 @@ namespace core
                     return target_address & 0xFFFF;
                 }
 
+                // TODO: add zero-page loop & page crossing
             case addressing_mode::INDEXED_INDIRECT :
                 {
-                    auto pre_target_address    = fetch() + registers.x;
-                    pre_target_address        &= 0xFF;
-                    auto lower_target_address  = bus->read(pre_target_address);
-                    auto higher_target_address = bus->read(pre_target_address + 1);
-                    auto target_address = merge_address(
-                        lower_target_address,
-                        higher_target_address
-                    );
-                    return target_address & 0xFFFF;
+                    uint8_t base = fetch();
+                    // zero-page loop
+                    uint16_t pre_target_address = (base + registers.x) & 0xFF;
+                    uint8_t  final_low          = bus->read(pre_target_address);
+                    // zero-page loop
+                    uint8_t final_high = bus->read((pre_target_address + 1) & 0xFF);
+                    auto target_address = merge_address(final_low, final_high);
+
+                    return target_address;
                 }
 
+                // TODO: add zero-page loop & page crossing
             case addressing_mode::INDIRECT_INDEXED :
                 {
-                    auto pre_target_address   = fetch();
-                    auto lower_target_address = bus->read(pre_target_address);
-                    auto higher_target_address = bus->read(pre_target_address + 1);
-                    auto target_address = merge_address(
-                        lower_target_address,
-                        higher_target_address
+                    uint8_t base = fetch();
+                    // zero-page loop
+                    uint16_t pre_target_address = merge_address(
+                        bus->read(base),
+                        bus->read((base + 1) & 0xFF)
                     );
-                    auto operand = bus->read(target_address + registers.y);
-                    return operand & 0xFFFF;
+                    auto target_address = pre_target_address + registers.y;
+
+                    if ((pre_target_address & 0xFF00) != (target_address & 0xFF00))
+                    {
+                        apply_cycles(1);
+                    }
+
+                    return target_address;
                 }
 
             default :

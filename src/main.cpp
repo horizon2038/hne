@@ -30,6 +30,9 @@
 #include <core/cpu/opcode/opcode_txs.hpp>
 #include <core/cpu/opcode/opcode_tya.hpp>
 
+#include <core/cpu/opcode/opcode_adc.hpp>
+#include <core/cpu/opcode/opcode_and.hpp>
+
 #include <core/cpu/opcode/opcode_brk.hpp>
 #include <core/cpu/opcode/opcode_nop.hpp>
 
@@ -208,6 +211,133 @@ void init_opcodes(core::cpu &target_cpu)
 
     // TYA
     target_cpu.register_opcode(std::make_unique<core::opcode_tya>(target_cpu), 0x98);
+
+    // ADC
+    target_cpu.register_opcode(
+        std::make_unique<core::opcode_adc>(IMMEDIATE, target_cpu),
+        0x69
+    );
+
+    target_cpu.register_opcode(
+        std::make_unique<core::opcode_adc>(ZERO_PAGE, target_cpu),
+        0x65
+    );
+
+    target_cpu.register_opcode(
+        std::make_unique<core::opcode_adc>(INDEXED_ZERO_PAGE_X, target_cpu),
+        0x75
+    );
+
+    target_cpu.register_opcode(
+        std::make_unique<core::opcode_adc>(ABSOLUTE, target_cpu),
+        0x6D
+    );
+
+    target_cpu.register_opcode(
+        std::make_unique<core::opcode_adc>(INDEXED_ABSOLUTE_X, target_cpu),
+        0x7D
+    );
+
+    target_cpu.register_opcode(
+        std::make_unique<core::opcode_adc>(INDEXED_ABSOLUTE_Y, target_cpu),
+        0x79
+    );
+
+    target_cpu.register_opcode(
+        std::make_unique<core::opcode_adc>(INDEXED_INDIRECT, target_cpu),
+        0x61
+    );
+
+    target_cpu.register_opcode(
+        std::make_unique<core::opcode_adc>(INDIRECT_INDEXED, target_cpu),
+        0x71
+    );
+
+    // AND
+    target_cpu.register_opcode(
+        std::make_unique<core::opcode_and>(IMMEDIATE, target_cpu),
+        0x29
+    );
+
+    target_cpu.register_opcode(
+        std::make_unique<core::opcode_and>(ZERO_PAGE, target_cpu),
+        0x25
+    );
+
+    target_cpu.register_opcode(
+        std::make_unique<core::opcode_and>(INDEXED_ZERO_PAGE_X, target_cpu),
+        0x35
+    );
+
+    target_cpu.register_opcode(
+        std::make_unique<core::opcode_and>(ABSOLUTE, target_cpu),
+        0x2D
+    );
+
+    target_cpu.register_opcode(
+        std::make_unique<core::opcode_and>(INDEXED_ABSOLUTE_X, target_cpu),
+        0x3D
+    );
+
+    target_cpu.register_opcode(
+        std::make_unique<core::opcode_and>(INDEXED_ABSOLUTE_Y, target_cpu),
+        0x39
+    );
+
+    target_cpu.register_opcode(
+        std::make_unique<core::opcode_and>(INDEXED_INDIRECT, target_cpu),
+        0x21
+    );
+
+    target_cpu.register_opcode(
+        std::make_unique<core::opcode_and>(INDIRECT_INDEXED, target_cpu),
+        0x31
+    );
+
+    // ASL
+    // BIT
+    // CMP
+    // CPX
+    // CPY
+    // DEC
+    // DEX
+    // DEY
+    // EOR
+    // INC
+    // INX
+    // INY
+    // LSR
+    // ORA
+    // ROL
+    // ROR
+    // SBS
+    //
+    // PHA
+    // PHP
+    // PLA
+    // PLP
+    //
+    // JMP
+    // JSR
+    // RTS
+    // RTI
+    //
+    // BCC
+    // BCS
+    // BEQ
+    // BMI
+    // BNE
+    // BPL
+    // BVC
+    // BVS
+    //
+    // CLC
+    // CLD
+    // CLI
+    // CLV
+    // SEC
+    // SED
+    // SEI
 
     // BRK
     target_cpu.register_opcode(std::make_unique<core::opcode_brk>(target_cpu), 0x00);
