@@ -33,6 +33,15 @@
 #include <core/cpu/opcode/opcode_adc.hpp>
 #include <core/cpu/opcode/opcode_and.hpp>
 
+#include <core/cpu/opcode/opcode_asl.hpp>
+#include <core/cpu/opcode/opcode_bit.hpp>
+#include <core/cpu/opcode/opcode_cmp.hpp>
+#include <core/cpu/opcode/opcode_cpx.hpp>
+#include <core/cpu/opcode/opcode_cpy.hpp>
+#include <core/cpu/opcode/opcode_dec.hpp>
+#include <core/cpu/opcode/opcode_dex.hpp>
+#include <core/cpu/opcode/opcode_dey.hpp>
+
 #include <core/cpu/opcode/opcode_brk.hpp>
 #include <core/cpu/opcode/opcode_nop.hpp>
 
@@ -295,13 +304,142 @@ void init_opcodes(core::cpu &target_cpu)
     );
 
     // ASL
+    target_cpu.register_opcode(
+        std::make_unique<core::opcode_asl>(ACCUMLATOR, target_cpu),
+        0x0A
+    );
+
+    target_cpu.register_opcode(
+        std::make_unique<core::opcode_asl>(ZERO_PAGE, target_cpu),
+        0x06
+    );
+
+    target_cpu.register_opcode(
+        std::make_unique<core::opcode_asl>(INDEXED_ZERO_PAGE_X, target_cpu),
+        0x16
+    );
+
+    target_cpu.register_opcode(
+        std::make_unique<core::opcode_asl>(ABSOLUTE, target_cpu),
+        0x0E
+    );
+
+    target_cpu.register_opcode(
+        std::make_unique<core::opcode_asl>(INDEXED_ABSOLUTE_X, target_cpu),
+        0x1E
+    );
+
     // BIT
+    target_cpu.register_opcode(
+        std::make_unique<core::opcode_bit>(ZERO_PAGE, target_cpu),
+        0x24
+    );
+
+    target_cpu.register_opcode(
+        std::make_unique<core::opcode_bit>(ABSOLUTE, target_cpu),
+        0x2C
+    );
+
     // CMP
+    target_cpu.register_opcode(
+        std::make_unique<core::opcode_cmp>(IMMEDIATE, target_cpu),
+        0xC9
+    );
+
+    target_cpu.register_opcode(
+        std::make_unique<core::opcode_cmp>(ZERO_PAGE, target_cpu),
+        0xC5
+    );
+
+    target_cpu.register_opcode(
+        std::make_unique<core::opcode_cmp>(INDEXED_ZERO_PAGE_X, target_cpu),
+        0xD5
+    );
+
+    target_cpu.register_opcode(
+        std::make_unique<core::opcode_cmp>(ABSOLUTE, target_cpu),
+        0xCD
+    );
+
+    target_cpu.register_opcode(
+        std::make_unique<core::opcode_cmp>(INDEXED_ABSOLUTE_X, target_cpu),
+        0xDD
+    );
+
+    target_cpu.register_opcode(
+        std::make_unique<core::opcode_cmp>(INDEXED_ABSOLUTE_Y, target_cpu),
+        0xD9
+    );
+
+    target_cpu.register_opcode(
+        std::make_unique<core::opcode_cmp>(INDEXED_INDIRECT, target_cpu),
+        0xC1
+    );
+
+    target_cpu.register_opcode(
+        std::make_unique<core::opcode_cmp>(INDIRECT_INDEXED, target_cpu),
+        0xD1
+    );
+
     // CPX
+    target_cpu.register_opcode(
+        std::make_unique<core::opcode_cpx>(IMMEDIATE, target_cpu),
+        0xE0
+    );
+
+    target_cpu.register_opcode(
+        std::make_unique<core::opcode_cpx>(ZERO_PAGE, target_cpu),
+        0xE4
+    );
+
+    target_cpu.register_opcode(
+        std::make_unique<core::opcode_cpx>(ABSOLUTE, target_cpu),
+        0xEC
+    );
+
     // CPY
+    target_cpu.register_opcode(
+        std::make_unique<core::opcode_cpy>(IMMEDIATE, target_cpu),
+        0xC0
+    );
+
+    target_cpu.register_opcode(
+        std::make_unique<core::opcode_cpy>(ZERO_PAGE, target_cpu),
+        0xC4
+    );
+
+    target_cpu.register_opcode(
+        std::make_unique<core::opcode_cpy>(ABSOLUTE, target_cpu),
+        0xCC
+    );
+
     // DEC
+    target_cpu.register_opcode(
+        std::make_unique<core::opcode_dec>(ZERO_PAGE, target_cpu),
+        0xC6
+    );
+
+    target_cpu.register_opcode(
+        std::make_unique<core::opcode_dec>(INDEXED_ZERO_PAGE_X, target_cpu),
+        0xD6
+    );
+
+    target_cpu.register_opcode(
+        std::make_unique<core::opcode_dec>(ABSOLUTE, target_cpu),
+        0xCE
+    );
+
+    target_cpu.register_opcode(
+        std::make_unique<core::opcode_dec>(INDEXED_ABSOLUTE_X, target_cpu),
+        0xDE
+    );
+
     // DEX
+    target_cpu.register_opcode(std::make_unique<core::opcode_dex>(target_cpu), 0xCA);
+
     // DEY
+    target_cpu.register_opcode(std::make_unique<core::opcode_dey>(target_cpu), 0x88);
+
     // EOR
     // INC
     // INX
@@ -365,6 +503,6 @@ int main(int argc, char *argv[])
     for (;;)
     {
         cpu->clock();
-        usleep(10000);
+        usleep(200000);
     }
 }

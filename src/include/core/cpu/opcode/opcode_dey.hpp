@@ -15,6 +15,7 @@ namespace core
 
         void execute() override
         {
+            root_cpu.apply_cycles(2);
             auto target_value    = root_cpu.registers.y - 1;
             root_cpu.registers.y = target_value;
 
