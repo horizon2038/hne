@@ -10,9 +10,9 @@
 namespace core
 {
     cpu::cpu(std::unique_ptr<io> target_bus)
-        : _registers {}
-        , _cycles { 6 } // initial cycles (6 : default)
-        , _bus { std::move(target_bus) }
+        : registers {}
+        , bus { std::move(target_bus) }
+        , cycles { 6 } // initial cycles (6 : default)
     {
         init_opcodes();
     }
@@ -25,28 +25,28 @@ namespace core
     {
         for (uint16_t i = 0; i < OPCODE_COUNT_MAX; i++)
         {
-            _opcodes[i] = std::make_unique<opcode_none>(*this);
+            register_opcode(std::make_unique<opcode_none>(*this), i);
         }
     }
 
     void cpu::register_opcode(
         std::unique_ptr<opcode> target_opcode,
-        uint16_t opcode_number
+        uint16_t                opcode_number
     )
     {
         if (opcode_number > (OPCODE_COUNT_MAX - 1))
         {
             return;
         }
-        _opcodes[opcode_number] = std::move(target_opcode);
+        opcodes[opcode_number] = std::move(target_opcode);
     }
 
     // clock() is called from boards
     void cpu::clock()
     {
-        printf("current pc : 0x%04x\n", this->_registers.pc);
-        _cycles--;
-        printf("cycles : %8d\n", _cycles);
+        printf("current pc : 0x%04x\n", this->registers.pc);
+        cycles--;
+        printf("cycles : %8d\n", cycles);
         if (is_cycle_running())
         {
             return;
@@ -59,17 +59,17 @@ namespace core
 
     bool cpu::is_cycle_running()
     {
-        return (_cycles > 0);
+        return (cycles > 0);
     }
 
     uint8_t cpu::fetch()
     {
-        return _bus->read(_registers.pc++);
+        return bus->read(registers.pc++);
     }
 
     void cpu::execute(uint8_t target_opcode)
     {
-        _opcodes[target_opcode]->execute();
+        opcodes[target_opcode]->execute();
     }
 
     uint16_t cpu::fetch_operand_address(addressing_mode target_addressing_mode)
@@ -100,21 +100,21 @@ namespace core
 
             case addressing_mode::INDEXED_ZERO_PAGE_X :
                 {
-                    auto target_address = fetch() + _registers.x;
+                    auto target_address = fetch() + registers.x;
                     return target_address & 0xFF;
                 }
 
             case addressing_mode::INDEXED_ZERO_PAGE_Y :
                 {
-                    auto target_address = fetch() + _registers.y;
+                    auto target_address = fetch() + registers.y;
                     return target_address & 0xFF;
                 }
 
             case addressing_mode::ABSOLUTE :
                 {
-                    auto lower_target_address = fetch();
+                    auto lower_target_address  = fetch();
                     auto higher_target_address = fetch();
-                    auto target_address = merge_address(
+                    auto target_address        = merge_address(
                         lower_target_address,
                         higher_target_address
                     );
@@ -123,42 +123,41 @@ namespace core
 
             case addressing_mode::INDEXED_ABSOLUTE_X :
                 {
-                    auto lower_target_address = fetch();
+                    auto lower_target_address  = fetch();
                     auto higher_target_address = fetch();
-                    auto target_address = merge_address(
+                    auto target_address        = merge_address(
                         lower_target_address,
                         higher_target_address
                     );
-                    return (target_address + _registers.x) & 0xFFFF;
+                    return (target_address + registers.x) & 0xFFFF;
                 }
 
             case addressing_mode::INDEXED_ABSOLUTE_Y :
                 {
-                    auto lower_target_address = fetch();
+                    auto lower_target_address  = fetch();
                     auto higher_target_address = fetch();
-                    auto target_address = merge_address(
+                    auto target_address        = merge_address(
                         lower_target_address,
                         higher_target_address
                     );
-                    return (target_address + _registers.y) & 0xFFFF;
+                    return (target_address + registers.y) & 0xFFFF;
                 }
 
             case addressing_mode::RELATIVE :
                 {
                     auto target_address
-                        = _registers.pc + static_cast<int8_t>(fetch());
+                        = registers.pc + static_cast<int8_t>(fetch());
                     return target_address & 0xFF;
                 }
 
             case addressing_mode::INDIRECT :
                 {
-                    auto lower_address = fetch();
+                    auto lower_address  = fetch();
                     auto higher_address = fetch();
                     auto pre_target_address
                         = merge_address(lower_address, higher_address);
-                    auto lower_target_address = _bus->read(pre_target_address);
-                    auto higher_target_address
-                        = _bus->read(pre_target_address + 1);
+                    auto lower_target_address = bus->read(pre_target_address);
+                    auto higher_target_address = bus->read(pre_target_address + 1);
                     auto target_address = merge_address(
                         lower_target_address,
                         higher_target_address
@@ -168,11 +167,10 @@ namespace core
 
             case addressing_mode::INDEXED_INDIRECT :
                 {
-                    auto pre_target_address = fetch() + _registers.x;
-                    pre_target_address &= 0xFF;
-                    auto lower_target_address = _bus->read(pre_target_address);
-                    auto higher_target_address
-                        = _bus->read(pre_target_address + 1);
+                    auto pre_target_address    = fetch() + registers.x;
+                    pre_target_address        &= 0xFF;
+                    auto lower_target_address  = bus->read(pre_target_address);
+                    auto higher_target_address = bus->read(pre_target_address + 1);
                     auto target_address = merge_address(
                         lower_target_address,
                         higher_target_address
@@ -182,15 +180,14 @@ namespace core
 
             case addressing_mode::INDIRECT_INDEXED :
                 {
-                    auto pre_target_address = fetch();
-                    auto lower_target_address = _bus->read(pre_target_address);
-                    auto higher_target_address
-                        = _bus->read(pre_target_address + 1);
+                    auto pre_target_address   = fetch();
+                    auto lower_target_address = bus->read(pre_target_address);
+                    auto higher_target_address = bus->read(pre_target_address + 1);
                     auto target_address = merge_address(
                         lower_target_address,
                         higher_target_address
                     );
-                    auto operand = _bus->read(target_address + _registers.y);
+                    auto operand = bus->read(target_address + registers.y);
                     return operand & 0xFFFF;
                 }
 
@@ -201,30 +198,41 @@ namespace core
 
     void cpu::apply_cycles(uint8_t cycles)
     {
-        this->_cycles = cycles;
+        this->cycles = cycles;
+    }
+
+    void cpu::update_negative(uint8_t target_register)
+    {
+        // bit 7 : *sign* bit
+        registers.negative = (target_register >> 7) & 1;
+    }
+
+    void cpu::update_zero(uint8_t target_register)
+    {
+        registers.zero = (target_register == 0);
     }
 
     void cpu::push(uint8_t data)
     {
-        _bus->write((0x0100 + _registers.s), data);
-        _registers.s--;
+        bus->write((0x0100 + registers.s), data);
+        registers.s--;
     }
 
     uint8_t cpu::pop()
     {
-        uint8_t fetched_data = _bus->read((0x0100 + _registers.s));
-        _registers.s++;
+        uint8_t fetched_data = bus->read((0x0100 + registers.s));
+        registers.s++;
         return fetched_data;
     }
 
     void cpu::reset()
     {
-        _registers.disable_irq = true;
-        _registers.init_registers();
-        _registers.pc = fetch_interrupt_handler_address(0xfffc, 0xfffd);
-        // _registers.pc = 0x8000;
-        printf("interrpt_handler_address : 0x%04x\n", this->_registers.pc);
-        _registers.disable_irq = false;
+        registers.disable_irq = true;
+        registers.init_registers();
+        registers.pc = fetch_interrupt_handler_address(0xfffc, 0xfffd);
+        // registers.pc = 0x8000;
+        printf("interrpt_handler_address : 0x%04x\n", this->registers.pc);
+        registers.disable_irq = false;
     }
 
     address cpu::fetch_interrupt_handler_address(
@@ -232,9 +240,9 @@ namespace core
         address higher_address
     )
     {
-        uint8_t lower_interrupt_handler_address = _bus->read(lower_address);
-        uint8_t higher_interrupt_handler_address = _bus->read(higher_address);
-        address interrupt_handler_address = merge_address(
+        uint8_t lower_interrupt_handler_address  = bus->read(lower_address);
+        uint8_t higher_interrupt_handler_address = bus->read(higher_address);
+        address interrupt_handler_address        = merge_address(
             lower_interrupt_handler_address,
             higher_interrupt_handler_address
         );
@@ -243,47 +251,47 @@ namespace core
 
     void cpu::nmi()
     {
-        _registers.disable_irq = true;
-        _registers.break_mode = false;
+        registers.disable_irq = true;
+        registers.break_mode  = false;
         save_interrupt_frame();
-        _registers.pc = fetch_interrupt_handler_address(0xfffa, 0xfffb);
-        _registers.disable_irq = false;
+        registers.pc          = fetch_interrupt_handler_address(0xfffa, 0xfffb);
+        registers.disable_irq = false;
     }
 
     void cpu::save_interrupt_frame()
     {
         // masking and set bit-conversion.
-        uint8_t lower_program_counter = (_registers.pc >> 0) & 0xFF;
-        uint8_t higher_program_counter = (_registers.pc >> 8) & 0xFF;
+        uint8_t lower_program_counter  = (registers.pc >> 0) & 0xFF;
+        uint8_t higher_program_counter = (registers.pc >> 8) & 0xFF;
 
         push(higher_program_counter);
         push(lower_program_counter);
-        push(_registers.p);
+        push(registers.p);
     }
 
     void cpu::irq()
     {
-        if (_registers.disable_irq)
+        if (registers.disable_irq)
         {
             return;
         }
-        _registers.disable_irq = true;
-        _registers.break_mode = false;
+        registers.disable_irq = true;
+        registers.break_mode  = false;
         save_interrupt_frame();
-        _registers.pc = fetch_interrupt_handler_address(0xfffe, 0xffff);
-        _registers.disable_irq = false;
+        registers.pc          = fetch_interrupt_handler_address(0xfffe, 0xffff);
+        registers.disable_irq = false;
     }
 
     void cpu::brk()
     {
-        if (_registers.disable_irq)
+        if (registers.disable_irq)
         {
             return;
         }
-        _registers.disable_irq = true;
-        _registers.break_mode = true;
+        registers.disable_irq = true;
+        registers.break_mode  = true;
         save_interrupt_frame();
-        _registers.pc = fetch_interrupt_handler_address(0xfffe, 0xffff);
-        _registers.disable_irq = false;
+        registers.pc          = fetch_interrupt_handler_address(0xfffe, 0xffff);
+        registers.disable_irq = false;
     }
 }

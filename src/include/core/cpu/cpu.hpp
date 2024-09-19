@@ -4,16 +4,17 @@
 #include <stdint.h>
 
 #include <core/common/common.hpp>
-#include <core/cpu/registers.hpp>
+#include <core/cpu/adressing.hpp>
+#include <core/cpu/hardware_context.hpp>
 #include <core/cpu/opcode/opcode.hpp>
 #include <core/io/io.hpp>
-#include <core/cpu/adressing.hpp>
 
 #include <memory>
 
 namespace core
 {
-    constexpr static uint16_t OPCODE_COUNT_MAX = 256;
+    static constexpr uint16_t OPCODE_COUNT_MAX = 256;
+
     // RP2A03
     class cpu
     {
@@ -21,23 +22,28 @@ namespace core
         cpu(std::unique_ptr<io> target_bus);
         ~cpu();
 
-        registers _registers;
+        hardware_context    registers;
+        std::unique_ptr<io> bus;
 
         void clock();
 
         uint8_t fetch();
-        void execute(uint8_t target_opcode);
+        void    execute(uint8_t target_opcode);
 
         uint16_t fetch_operand_address(addressing_mode);
-        void apply_cycles(uint8_t cycles);
+        void     apply_cycles(uint8_t cycles);
 
-        void push(uint8_t data);
+        // flag
+        void update_negative(uint8_t target_register);
+        void update_zero(uint8_t target_register);
+
+        void    push(uint8_t data);
         uint8_t pop();
 
         // interrupt
         void register_opcode(
             std::unique_ptr<opcode> target_opcode,
-            uint16_t opcode_number
+            uint16_t                opcode_number
         );
 
         void reset();
@@ -49,9 +55,8 @@ namespace core
         void print_registers();
 
       private:
-        uint8_t _cycles;
-        std::unique_ptr<opcode> _opcodes[OPCODE_COUNT_MAX];
-        std::unique_ptr<io> _bus;
+        uint8_t                 cycles;
+        std::unique_ptr<opcode> opcodes[OPCODE_COUNT_MAX];
 
         // init
         void init_opcodes();

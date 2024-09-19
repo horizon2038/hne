@@ -1,11 +1,11 @@
-#ifndef REGISTERS_HPP
-#define REGISTERS_HPP
+#ifndef CORE_HARDWARE_CONTEXT_HPP
+#define CORE_HARDWARE_CONTEXT_HPP
 
 #include <stdint.h>
 
 namespace core
 {
-    struct registers
+    struct hardware_context
     {
         // accumlator
         uint8_t a;

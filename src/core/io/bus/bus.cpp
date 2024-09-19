@@ -11,10 +11,10 @@ namespace core
         std::unique_ptr<io> target_program_rom,
         std::unique_ptr<io> target_ppu
     )
-        : _working_ram(std::move(target_working_ram))
-        , _charactor_rom(std::move(target_charactor_rom))
-        , _program_rom(std::move(target_program_rom))
-        , _ppu(std::move(target_ppu))
+        : working_ram(std::move(target_working_ram))
+        , charactor_rom(std::move(target_charactor_rom))
+        , program_rom(std::move(target_program_rom))
+        , ppu(std::move(target_ppu))
     {
     }
     // nes memory_map
@@ -48,25 +48,25 @@ namespace core
         if (target_address < 0x0800)
         {
             // wram
-            return *_working_ram.get();
+            return *working_ram.get();
         }
 
         if (0x0800 <= target_address && target_address < 0x1000)
         {
             // mirror of wram
-            return *_working_ram.get();
+            return *working_ram.get();
         }
 
         if (0x2000 <= target_address && target_address < 0x2008)
         {
             // ppu registers
-            return *_ppu.get();
+            return *ppu.get();
         }
 
         if (0x2008 <= target_address && target_address < 0x2010)
         {
             // mirror of ppu registers
-            return *_ppu.get();
+            return *ppu.get();
         }
 
         if (0x4000 <= target_address && target_address < 0x4018)
@@ -92,13 +92,13 @@ namespace core
         if (0x8000 <= target_address && target_address < 0xc000)
         {
             // program rom lower-half
-            return *_program_rom.get();
+            return *program_rom.get();
         }
 
         if (0xc000 <= target_address && target_address <= 0xFFFF)
         {
             // program rom higher-half
-            return *_program_rom.get();
+            return *program_rom.get();
         }
 
         // failed

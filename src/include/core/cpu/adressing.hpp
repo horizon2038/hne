@@ -16,8 +16,8 @@ namespace core
         INDEXED_ABSOLUTE_Y,
         RELATIVE,
         INDIRECT,
-        INDEXED_INDIRECT,
-        INDIRECT_INDEXED,
+        INDEXED_INDIRECT, // X
+        INDIRECT_INDEXED, // Y
     };
 }
 #endif

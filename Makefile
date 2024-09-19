@@ -16,9 +16,9 @@ CC := clang
 CXX := clang++
 LD := ld.lld
 
-CFLAGS := -g -O2 -Wall
-CXXFLAGS := -g -O2 -Wall -Wextra
-LDFLAGS := -g -O2 -Wall -Wextra
+CFLAGS := -O2 -Wall -flto
+CXXFLAGS := -std=c++20 -O2 -Wall -Wextra -flto -fwhole-program-vtables -fforce-emit-vtables -fvirtual-function-elimination
+LDFLAGS := -O2 -Wall -Wextra -flto
 # -e start -static
 
 CPPFLAGS := $(INCFLAGS)

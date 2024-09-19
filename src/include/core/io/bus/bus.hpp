@@ -22,10 +22,10 @@ namespace core
         uint8_t read(address target_address) override;
 
       private:
-        std::unique_ptr<io> _working_ram;
-        std::unique_ptr<io> _charactor_rom;
-        std::unique_ptr<io> _program_rom;
-        std::unique_ptr<io> _ppu;
+        std::unique_ptr<io> working_ram;
+        std::unique_ptr<io> charactor_rom;
+        std::unique_ptr<io> program_rom;
+        std::unique_ptr<io> ppu;
 
         io_stab empty_io;
 
