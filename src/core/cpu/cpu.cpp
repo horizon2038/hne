@@ -46,7 +46,7 @@ namespace core
     {
         printf("current pc : 0x%04x\n", this->registers.pc);
         cycles--;
-        printf("cycles : %8d\n", cycles);
+        // printf("cycles : %8d\n", cycles);
         if (is_cycle_running())
         {
             return;

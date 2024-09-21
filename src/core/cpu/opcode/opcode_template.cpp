@@ -2,18 +2,14 @@
 
 namespace core
 {
-    opcode_xxx::opcode_xxx(
-        addressing_mode init_addressing_mode,
-        cpu &target_cpu
-    )
-        : _addressing_mode { init_addressing_mode }
-        , _cpu { target_cpu }
-        , _cycles { 1 }
+    opcode_xxx::opcode_xxx(addressing_mode init_addressing_mode, cpu &target_cpu)
+        : mode { init_addressing_mode }
+        , root_cpu { target_cpu }
     {
     }
 
     void opcode_xxx::execute()
     {
-        _cpu.apply_cycles(_cycles);
+        root_cpu.apply_cycles(0);
     }
 }

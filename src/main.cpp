@@ -503,6 +503,6 @@ int main(int argc, char *argv[])
     for (;;)
     {
         cpu->clock();
-        usleep(200000);
+        usleep(100000);
     }
 }

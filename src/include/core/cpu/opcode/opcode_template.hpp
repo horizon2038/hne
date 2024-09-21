@@ -1,9 +1,9 @@
 #ifndef CORE_OPCODE_XXX_HPP
 #define CORE_OPCODE_XXX_HPP
 
-#include <core/cpu/opcode/opcode.hpp>
-#include <core/cpu/cpu.hpp>
 #include <core/cpu/adressing.hpp>
+#include <core/cpu/cpu.hpp>
+#include <core/cpu/opcode/opcode.hpp>
 
 namespace core
 {
@@ -17,8 +17,7 @@ namespace core
 
       private:
         addressing_mode mode;
-        cpu &root_cpu;
-        uint8_t cycles;
+        cpu            &root_cpu;
     };
 }
 

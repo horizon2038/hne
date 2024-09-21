@@ -1,7 +1,7 @@
 #include <core/io/bus/bus.hpp>
 
-#include <utility>
 #include <stdio.h>
+#include <utility>
 
 namespace core
 {
@@ -17,6 +17,7 @@ namespace core
         , ppu(std::move(target_ppu))
     {
     }
+
     // nes memory_map
     //
     // +--------------------------------+
@@ -171,14 +172,14 @@ namespace core
 
     void bus::write(address target_address, uint8_t data)
     {
-        io &target_io = search_io_from_address(target_address);
+        io     &target_io        = search_io_from_address(target_address);
         address local_io_address = convert_local_io_address(target_address);
         target_io.write(local_io_address, data);
     }
 
     uint8_t bus::read(address target_address)
     {
-        io &target_io = search_io_from_address(target_address);
+        io     &target_io        = search_io_from_address(target_address);
         address local_io_address = convert_local_io_address(target_address);
         printf(
             "read : [0x%04x 0x%04x] -> 0x%02x\n",
